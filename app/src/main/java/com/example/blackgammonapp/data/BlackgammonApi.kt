@@ -49,5 +49,5 @@ interface BlackgammonApi {
         @Path("from") from: Int,
         @Path("to") to: Int,
         @Header("Token") token: String
-    ) : List<MovePiece>
+    ) : List<Board>
 }
