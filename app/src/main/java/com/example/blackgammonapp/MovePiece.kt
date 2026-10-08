@@ -1,6 +1,6 @@
-package com.example.blackgammonapp.data
+package com.example.blackgammonapp
 
-data class Board(
+data class MovePiece(
     val position: Int,
     val w_count: Int,
     val b_count: Int,

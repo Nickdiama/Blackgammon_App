@@ -1,4 +1,4 @@
-package com.example.blackgammonapp.data
+package com.example.blackgammonapp
 
 data class Status(
     val dice1: Int,

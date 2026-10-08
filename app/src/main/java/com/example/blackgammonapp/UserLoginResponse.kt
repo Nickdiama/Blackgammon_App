@@ -1,4 +1,4 @@
-package com.example.blackgammonapp.data
+package com.example.blackgammonapp
 
 data class UserLoginResponse(
     val username: String,
