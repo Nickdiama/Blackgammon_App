@@ -1,4 +1,4 @@
-package com.example.blackgammonapp
+package com.example.blackgammonapp.data
 
 data class Users(
     val piece_color: String,

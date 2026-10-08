@@ -1,4 +1,4 @@
-package com.example.blackgammonapp
+package com.example.blackgammonapp.data
 
 data class PlayingDice(
     val dice: Int

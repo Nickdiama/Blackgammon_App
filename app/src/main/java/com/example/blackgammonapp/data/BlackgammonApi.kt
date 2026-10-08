@@ -1,4 +1,4 @@
-package com.example.blackgammonapp
+package com.example.blackgammonapp.data
 
 import retrofit2.http.GET
 import retrofit2.http.Body

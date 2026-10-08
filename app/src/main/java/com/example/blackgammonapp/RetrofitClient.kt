@@ -1,5 +1,6 @@
 package com.example.blackgammonapp
 
+import com.example.blackgammonapp.data.BlackgammonApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
