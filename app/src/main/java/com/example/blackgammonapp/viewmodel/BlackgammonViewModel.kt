@@ -53,7 +53,7 @@ class BlackgammonViewModel : ViewModel() {
                 val request = UserLoginRequest(username = username)
                 val response = RetrofitClient.api.login(pieceColor = color, request = request)
 
-                authToken = response.token
+                authToken = response[0].token
                 onSuccess()
             }catch (e: HttpException){
                 val errorBody = e.response()?.errorBody()?.string()
@@ -150,6 +150,7 @@ class BlackgammonViewModel : ViewModel() {
         }
     }
 
+    // Make Move
     fun playMove(from: Int, to: Int){
         if (authToken.isEmpty()) return
 

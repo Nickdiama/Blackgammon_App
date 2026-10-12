@@ -13,7 +13,7 @@ interface BlackgammonApi {
     suspend fun login(
         @Path("piece_color") pieceColor: String,
         @Body request: UserLoginRequest
-    ): UserLoginResponse
+    ): List<UserLoginResponse>
 
     // Show User
     @GET("tavli/plakoto.php/player")
