@@ -9,19 +9,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.blackgammonapp.RetrofitClient
+import com.example.blackgammonapp.ui.theme.Green
 import com.example.blackgammonapp.viewmodel.BlackgammonViewModel
 
 @Composable
 fun MainScreen(
     viewModel: BlackgammonViewModel,
     modifier: Modifier = Modifier,
-    onNavigateToBoard: () -> Unit = {} // Συνάρτηση για να αλλάζει οθόνη και να πηγαίνει στο ταμπλό
+    onNavigateToBoard: () -> Unit = {} // Screen changing function
 ) {
-    // Κατάστασεις για το αν είναι ανοιχτά τα Dialogs
+    // Dialog state
     var showLoginDialog by remember { mutableStateOf(false) }
     var showStatusDialog by remember { mutableStateOf(false) }
+    var showUsersDialog by remember { mutableStateOf(false) }
 
-    // Τοπικά πεδία για το Dialog του Login
+    // Variables for login
     var usernameInput by remember { mutableStateOf("") }
     var colorInput by remember { mutableStateOf("W") } // "W" ή "B"
 
@@ -46,9 +49,9 @@ fun MainScreen(
 
                 Spacer(modifier = Modifier.height(30.dp))
 
-                // --- 2. ΚΟΥΜΠΙ LOGIN (Ανοίγει Dialog) ---
+                // Login button
                 OutlinedButton(
-                    onClick = { showLoginDialog = true },
+                    onClick = { showLoginDialog = true } /*Opens dialog*/,
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(50.dp),
@@ -57,23 +60,37 @@ fun MainScreen(
                     Text(text = "Σύνδεση", fontSize = 16.sp)
                 }
 
-                // --- 1. ΜΕΓΑΛΟ ΠΡΑΣΙΝΟ ΚΟΥΜΠΙ ΓΙΑ ΤΟ ΤΑΜΠΛΟ ---
+                // Board button
                 Button(
                     onClick = { onNavigateToBoard() },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(60.dp),
                     shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E7D32)) // Σκούρο πράσινο
+                    colors = ButtonDefaults.buttonColors(containerColor = Green)
                 ) {
                     Text(text = "Παίξε ", fontSize = 20.sp, color = Color.White)
                 }
 
-                // --- 3. ΚΟΥΜΠΙ STATUS (Ανοίγει Dialog) ---
+                // Users Button
                 OutlinedButton(
                     onClick = {
-                        viewModel.getStatus() // Φέρνει τα δεδομένα status από τον server
-                        showStatusDialog = true
+                        viewModel.users()
+                        showUsersDialog = true /*Opens dialog*/
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(50.dp),
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Text(text = "Παίζουν τώρα...", fontSize = 16.sp)
+                }
+
+                // Status button
+                OutlinedButton(
+                    onClick = {
+                        viewModel.getStatus()
+                        showStatusDialog = true /*Opens dialog*/
                     },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
@@ -87,7 +104,7 @@ fun MainScreen(
                 if (viewModel.authToken.isNotBlank()) {
                     Text(
                         text = "✓ Συνδεδεμένος",
-                        color = Color(0xFF2E7D32),
+                        color = Green,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -95,9 +112,7 @@ fun MainScreen(
         }
     }
 
-    // ==========================================
-    // DIALOG 1: LOGIN POPUP
-    // ==========================================
+    // Login dialog
     if (showLoginDialog) {
         AlertDialog(
             onDismissRequest = { showLoginDialog = false },
@@ -110,12 +125,14 @@ fun MainScreen(
                         label = { Text("Όνομα Χρήστη") },
                         singleLine = true
                     )
+
                     OutlinedTextField(
                         value = colorInput,
                         onValueChange = { colorInput = it },
                         label = { Text("Χρώμα (W ή B)") },
                         singleLine = true
                     )
+
                     if (viewModel.errorMessage.isNotBlank()) {
                         Text(
                             text = viewModel.errorMessage,
@@ -129,10 +146,9 @@ fun MainScreen(
                 Button(
                     onClick = {
                         viewModel.userLogin(username = usernameInput, color = colorInput) {
-                            showLoginDialog = false // Κλείνει το παράθυρο αν πετύχει
+                            showLoginDialog = false // Closes the dialog
                         }
-                    },
-                    enabled = !viewModel.isLoading && usernameInput.isNotBlank()
+                    }
                 ) {
                     if (viewModel.isLoading) {
                         CircularProgressIndicator(
@@ -147,6 +163,53 @@ fun MainScreen(
             dismissButton = {
                 TextButton(onClick = { showLoginDialog = false }) {
                     Text("Άκυρο")
+                }
+            }
+        )
+    }
+
+    // Status dialog
+    if (showStatusDialog) {
+        AlertDialog(
+            onDismissRequest = { showStatusDialog = false },
+            title = { Text("Κατάσταση Παιχνιδιού") },
+            text = {
+                Column {
+                    if (viewModel.status.isEmpty()) {
+                        Text("Φόρτωση ή κενά δεδομένα...")
+                    } else {
+                        for (st in viewModel.status) {
+                            Text("State: ${st.status ?: "N/A"}")
+                            Text("Turn: ${st.p_turn} ")
+                            Text("Winner: ${st.result ?: "None"}")
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showStatusDialog = false }) {
+                    Text("Κλείσιμο")
+                }
+            },
+
+        )
+    }
+
+    // Users dialog
+    if (showUsersDialog) {
+        AlertDialog(
+            onDismissRequest = { showUsersDialog = false },
+            title = { Text("Παίζουν τώρα...") },
+            text = {
+                Column {
+                    for (us in viewModel.allUsers){
+                        Text("Player: ${us.username}, Color: ${us.piece_color}")
+                    }
+                }
+            },
+            confirmButton = {
+                Button(onClick = { showUsersDialog = false }) {
+                    Text("Κλείσιμο")
                 }
             }
         )
