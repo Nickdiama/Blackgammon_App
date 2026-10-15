@@ -9,7 +9,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.blackgammonapp.RetrofitClient
 import com.example.blackgammonapp.ui.theme.Green
 import com.example.blackgammonapp.viewmodel.BlackgammonViewModel
 
@@ -179,19 +178,32 @@ fun MainScreen(
                         Text("Φόρτωση ή κενά δεδομένα...")
                     } else {
                         for (st in viewModel.status) {
-                            Text("State: ${st.status ?: "N/A"}")
-                            Text("Turn: ${st.p_turn} ")
-                            Text("Winner: ${st.result ?: "None"}")
+                            Text("Κατάσταση: ${st.status ?: "N/A"}")
+                            Text("Σειρά: ${st.p_turn} ")
+                            Text("Νικητής: ${st.result ?: "None"}")
                         }
                     }
                 }
             },
             confirmButton = {
-                Button(onClick = { showStatusDialog = false }) {
-                    Text("Κλείσιμο")
+                Button(
+                    onClick = {
+                        viewModel.postBoard()
+                        showStatusDialog = false
+                    }
+                ) {
+                    Text("Επανεκκίνηση Παιχνιδιού")
                 }
             },
-
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showStatusDialog = false
+                    }
+                ) {
+                    Text("Κλείσιμο")
+                }
+            }
         )
     }
 
@@ -203,7 +215,7 @@ fun MainScreen(
             text = {
                 Column {
                     for (us in viewModel.allUsers){
-                        Text("Player: ${us.username}, Color: ${us.piece_color}")
+                        Text("• Player: ${us.username}, Color: ${us.piece_color}")
                     }
                 }
             },
