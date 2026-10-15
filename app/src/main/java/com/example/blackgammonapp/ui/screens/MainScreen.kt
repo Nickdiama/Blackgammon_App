@@ -1,5 +1,6 @@
 package com.example.blackgammonapp.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -125,12 +126,40 @@ fun MainScreen(
                         singleLine = true
                     )
 
-                    OutlinedTextField(
-                        value = colorInput,
-                        onValueChange = { colorInput = it },
-                        label = { Text("Χρώμα (W ή B)") },
-                        singleLine = true
+                    Text(
+                        text = "Επιλογή Χρώματος Πούλιων:",
+                        style = MaterialTheme.typography.bodyMedium
                     )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Επιλογή Λευκά
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { colorInput = "W" }
+                        ) {
+                            RadioButton(
+                                selected = (colorInput == "W"),
+                                onClick = { colorInput = "W" }
+                            )
+                            Text(text = "Λευκά")
+                        }
+
+                        // Επιλογή Μαύρα
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { colorInput = "B" }
+                        ) {
+                            RadioButton(
+                                selected = (colorInput == "B"),
+                                onClick = { colorInput = "B" }
+                            )
+                            Text(text = "Μαύρα")
+                        }
+                    }
 
                     if (viewModel.errorMessage.isNotBlank()) {
                         Text(
