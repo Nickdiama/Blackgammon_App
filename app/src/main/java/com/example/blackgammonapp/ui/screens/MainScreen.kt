@@ -26,7 +26,7 @@ fun MainScreen(
 
     // Variables for login
     var usernameInput by remember { mutableStateOf("") }
-    var colorInput by remember { mutableStateOf("W") } // "W" ή "B"
+    var colorInput by remember { mutableStateOf("") } // "W" ή "B"
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -51,7 +51,10 @@ fun MainScreen(
 
                 // Login button
                 OutlinedButton(
-                    onClick = { showLoginDialog = true } /*Opens dialog*/,
+                    onClick = {
+                        viewModel.users()
+                        showLoginDialog = true /*Opens dialog*/
+                    },
                     modifier = Modifier
                         .fillMaxWidth(0.8f)
                         .height(50.dp),
@@ -114,59 +117,71 @@ fun MainScreen(
 
     // Login dialog
     if (showLoginDialog) {
+        val registeredUsersCount = viewModel.allUsers.count {
+            !it.username.isNullOrBlank()
+        }
+        val isGameFull = registeredUsersCount >= 2
         AlertDialog(
             onDismissRequest = { showLoginDialog = false },
             title = { Text("Σύνδεση Χρήστη") },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = usernameInput,
-                        onValueChange = { usernameInput = it },
-                        label = { Text("Όνομα Χρήστη") },
-                        singleLine = true
-                    )
-
-                    Text(
-                        text = "Επιλογή Χρώματος Πούλιων:",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        // Επιλογή Λευκά
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable { colorInput = "W" }
-                        ) {
-                            RadioButton(
-                                selected = (colorInput == "W"),
-                                onClick = { colorInput = "W" }
-                            )
-                            Text(text = "Λευκά")
-                        }
-
-                        // Επιλογή Μαύρα
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable { colorInput = "B" }
-                        ) {
-                            RadioButton(
-                                selected = (colorInput == "B"),
-                                onClick = { colorInput = "B" }
-                            )
-                            Text(text = "Μαύρα")
-                        }
-                    }
-
-                    if (viewModel.errorMessage.isNotBlank()) {
+                    if (isGameFull) {
                         Text(
-                            text = viewModel.errorMessage,
+                            text = "Το παιχνίδι είναι γεμάτο (2/2 παίκτες). Κάνε επαννεκίνηση του παιχνιδιού για να συνδεθείς!",
                             color = MaterialTheme.colorScheme.error,
-                            fontSize = 12.sp
+                            fontSize = 14.sp
                         )
+                    } else {
+                        OutlinedTextField(
+                            value = usernameInput,
+                            onValueChange = { usernameInput = it },
+                            label = { Text("Όνομα Χρήστη") },
+                            singleLine = true
+                        )
+
+                        Text(
+                            text = "Επιλογή Χρώματος Πούλιων:",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            // Επιλογή Λευκά
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { colorInput = "W" }
+                            ) {
+                                RadioButton(
+                                    selected = (colorInput == "W"),
+                                    onClick = { colorInput = "W" }
+                                )
+                                Text(text = "Λευκά")
+                            }
+
+                            // Επιλογή Μαύρα
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.clickable { colorInput = "B" }
+                            ) {
+                                RadioButton(
+                                    selected = (colorInput == "B"),
+                                    onClick = { colorInput = "B" }
+                                )
+                                Text(text = "Μαύρα")
+                            }
+                        }
+
+                        if (viewModel.errorMessage.isNotBlank()) {
+                            Text(
+                                text = viewModel.errorMessage,
+                                color = MaterialTheme.colorScheme.error,
+                                fontSize = 12.sp
+                            )
+                        }
                     }
                 }
             },
@@ -175,8 +190,12 @@ fun MainScreen(
                     onClick = {
                         viewModel.userLogin(username = usernameInput, color = colorInput) {
                             showLoginDialog = false // Closes the dialog
+                            viewModel.users()
                         }
-                    }
+                        usernameInput = ""
+                        colorInput = ""
+                    },
+                    enabled = !isGameFull && !viewModel.isLoading && usernameInput.isNotBlank()
                 ) {
                     if (viewModel.isLoading) {
                         CircularProgressIndicator(
@@ -218,6 +237,7 @@ fun MainScreen(
                 Button(
                     onClick = {
                         viewModel.postBoard()
+                        viewModel.users()
                         showStatusDialog = false
                     }
                 ) {
