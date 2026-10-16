@@ -1,5 +1,6 @@
 package com.example.blackgammonapp.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,10 +9,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.blackgammonapp.ui.theme.Green
 import com.example.blackgammonapp.viewmodel.BlackgammonViewModel
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
+import com.example.blackgammonapp.R
 
 @Composable
 fun MainScreen(
@@ -32,8 +37,21 @@ fun MainScreen(
         modifier = modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
+
+        // Background image
+        Image(
+            painter = painterResource(id = R.drawable.tablo),
+            contentDescription = "Background Board",
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.15F),
+            contentScale = ContentScale.Crop
+        )
+
         Box(
-            modifier = Modifier.fillMaxSize().padding(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
