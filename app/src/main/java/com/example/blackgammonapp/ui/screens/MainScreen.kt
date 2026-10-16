@@ -31,7 +31,7 @@ fun MainScreen(
 
     // Variables for login
     var usernameInput by remember { mutableStateOf("") }
-    var colorInput by remember { mutableStateOf("") } // "W" ή "B"
+    var colorInput by remember { mutableStateOf("") }
 
     Surface(
         modifier = modifier.fillMaxSize(),
@@ -146,7 +146,7 @@ fun MainScreen(
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     if (isGameFull) {
                         Text(
-                            text = "Το παιχνίδι είναι γεμάτο (2/2 παίκτες). Κάνε επαννεκίνηση του παιχνιδιού για να συνδεθείς!",
+                            text = "Το παιχνίδι είναι γεμάτο (2/2 παίκτες). Κάνε επανεκκίνηση του παιχνιδιού για να συνδεθείς!",
                             color = MaterialTheme.colorScheme.error,
                             fontSize = 14.sp
                         )
@@ -159,7 +159,7 @@ fun MainScreen(
                         )
 
                         Text(
-                            text = "Επιλογή Χρώματος Πούλιων:",
+                            text = "Επιλογή Χρώματος:",
                             style = MaterialTheme.typography.bodyMedium
                         )
 
@@ -287,7 +287,10 @@ fun MainScreen(
                 }
             },
             confirmButton = {
-                Button(onClick = { showUsersDialog = false }) {
+                Button(onClick = {
+                    showUsersDialog = false
+                }
+                ) {
                     Text("Κλείσιμο")
                 }
             }
